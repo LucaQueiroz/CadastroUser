@@ -1,4 +1,5 @@
-@page  "/Product/CadProduct"
+@page  "/Product/EditProduct"
+@page "/Product/EditProduct/{Item}"
 @using System.Net.Http
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
@@ -36,15 +37,23 @@
 @code {
 
     private Product product = new Product();
-    
-    private EditContext editContext { get; set;}
+    private EditContext editContext { get; set; }
+
+    [Parameter]
+    public string Item { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var itemId = Item;
+        product = await Http.GetFromJsonAsync<Product>($"/product/GetById?id={itemId}");
+        editContext = new EditContext(product);
+    }
 
     private async Task HandleValidSubmit()
     {
         //Enviar dados para o Controller no Backend
-        var produto1 = await Http.PostAsJsonAsync("/Product/Create", product);
+        var teste = await Http.PutAsJsonAsync("/product/Update", product);
         NavigationManager.NavigateTo("product/ListProduct");
-
     }
 
     private void HandleReset()
